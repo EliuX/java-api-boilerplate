@@ -4,6 +4,8 @@ import com.github.eliux.dm.Person;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
@@ -13,31 +15,34 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.Optional;
 
 @RunWith(SpringRunner.class)
-@DataJpaTest
-public class PersonRepositoryTest {
+public class PersonRepositoryWithMockingTest {
 
-    @Autowired
-    private TestEntityManager entityManager;
-
-    @Autowired
+    @MockBean
     private PersonRepository personRepository;
 
     @Test
-    public void whenPersonSavedAndFindByName_thenReturnPerson() {
+    public void whenPersonSavedAndFindByName_thenReturnPerson2() {
         //Given
-        final Person samplePerson = new Person("Jon Doe");
-        entityManager.persist(samplePerson);
-        entityManager.flush();
+        Mockito.when(personRepository.findByName(ArgumentMatchers.anyString()))
+                .thenReturn(Optional.of(new Person("Ronald McDonald's")));
+        Mockito.when(personRepository.findByName(ArgumentMatchers.contains("Doe")))
+                .thenReturn(Optional.of(new Person("Jon Doe")));
 
         //When
         final Optional<Person> foundPerson = personRepository.findByName("Jon Doe");
+        final Optional<Person> foundPerson2 = personRepository.findByName("Anyone");
 
         //Then
-        Assert.assertTrue("The person was not saved", foundPerson.isPresent());
         Assert.assertEquals(
                 "Unexpected found person",
                 "Jon Doe",
                 foundPerson.get().getName()
+        );
+
+        Assert.assertEquals(
+                "Unexpected second person found",
+                "Ronald McDonald's",
+                foundPerson2.get().getName()
         );
     }
 }
