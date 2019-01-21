@@ -6,6 +6,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Invalid data")
 public class InvalidDataException extends RuntimeException{
 
+    public InvalidDataException(){
+        super();
+    }
+
     public InvalidDataException(String message) {
         super(message);
     }

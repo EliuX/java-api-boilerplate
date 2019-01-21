@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class RoutingAPI {
+public class RoutingAPIEndpoint {
 
     static final String THIRD_PARTY_API_URL = "http://localhost:3000";
 

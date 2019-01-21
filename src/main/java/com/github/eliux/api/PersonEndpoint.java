@@ -3,6 +3,7 @@ package com.github.eliux.api;
 import com.github.eliux.dm.Person;
 import com.github.eliux.dm.persistence.PersonRepository;
 import com.github.eliux.validations.ElementNotFoundException;
+import com.github.eliux.validations.InvalidDataException;
 import com.github.eliux.validations.Preconditions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.validation.Valid;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/people")
@@ -39,17 +40,8 @@ public class PersonEndpoint  extends ResponseEntityExceptionHandler {
                 .orElseThrow(ElementNotFoundException::new);
     }
 
-    @ResponseStatus(HttpStatus.CREATED)
-    public Person insertNew(@Valid @RequestBody Person data) {
-        Preconditions.checkNotNull(data);
-
-        final Person savedPerson = personRepository.save(data);
-
-        return savedPerson;
-    }
-
     @PostMapping
-    @ResponseStatus(HttpStatus.OK)
+    @ResponseStatus(HttpStatus.CREATED)
     public Person createPerson(@RequestBody Person person) {
         Preconditions.checkNotNull(person);
         return personRepository.save(person);
@@ -58,6 +50,9 @@ public class PersonEndpoint  extends ResponseEntityExceptionHandler {
     @PutMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
     public Person updatePerson(@RequestBody Person person, @PathVariable Long id) {
+        Optional.ofNullable(person.getId())
+                .filter(id::equals)
+                .orElseThrow(InvalidDataException::new);
         personRepository.findById(id)
                 .orElseThrow(ElementNotFoundException::new);
         return personRepository.save(person);
