@@ -14,8 +14,15 @@ public class Person {
     @Size(min = 3, max = 32)
     private String name;
 
+    private Integer age;
+
+    public Person() {
+        this("Anonymous");
+    }
+
     public Person(String name) {
         this.name = name;
+        this.age = 18;
     }
 
     public Long getId() {
@@ -28,5 +35,13 @@ public class Person {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Integer getAge() {
+        return age;
+    }
+
+    public void setAge(Integer age) {
+        this.age = age;
     }
 }
